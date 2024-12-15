@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Security.AccessControl;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
@@ -26,7 +27,6 @@ namespace PE3
         private int currentIndex;
         private List<int> availableHints = new List<int> { 1, 2, 3, 4 };
         private Random rnd = new Random();
-
 
         public class GuessHistoryItem
         {
@@ -182,12 +182,6 @@ namespace PE3
                 MessageBox.Show("Time's up! You lost your turn.");
                 attempts++;
                 Title = UpdateTitle();
-                if (attempts >= maxAttempts)
-                {
-                    MessageBox.Show("Game over! You've reached the maximum number of attempts.");
-                    gameEnded = true;
-                    timer.Stop();
-                }
             }
         }
 
@@ -243,7 +237,6 @@ namespace PE3
             mistakes += CompareColor(comboBox4Color, color4);
             return mistakes;
         }
-
 
         private int CompareColor(string chosenColor, string correctColor)
         {
@@ -376,18 +369,17 @@ namespace PE3
 
             CompareCodeWithLabels(comboBox1Color, comboBox2Color, comboBox3Color, comboBox4Color);
 
-            attempts++;
-            Title = UpdateTitle();
-
             if (comboBox1Color == color1 && comboBox2Color == color2 && comboBox3Color == color3 && comboBox4Color == color4)
             {
+                attempts++;
+                Title = UpdateTitle();
                 string nextPlayer = GetNextPlayerName();
                 MessageBox.Show($"Code is gekraakt in {attempts} pogingen. Nu is speler {nextPlayer} aan de beurt.  ");
                 UpdateHighscores(playerName, currentScore);
                 timer.Stop();
                 SwitchToNextPlayer(playerNames);
-            }
 
+            }
             else if (attempts >= maxAttempts)
             {
                 string nextPlayer = GetNextPlayerName();
@@ -402,6 +394,11 @@ namespace PE3
                 timer.Stop();
 
                 SwitchToNextPlayer(playerNames);
+            }
+            else
+            {
+                attempts++;
+                Title = UpdateTitle();
             }
         }
 
@@ -440,6 +437,7 @@ namespace PE3
             comboBox2.SelectedIndex = -1;
             comboBox3.SelectedIndex = -1;
             comboBox4.SelectedIndex = -1;
+            ResetHints();
         }
 
         /// <summary>
@@ -587,6 +585,10 @@ namespace PE3
                     break;
             }
             MessageBox.Show($"De hint is: De kleur op positie {position} is {correctColorAtPosition}.", "Positie Hint", MessageBoxButton.OK, MessageBoxImage.Information);
+        }
+        private void ResetHints()
+        {
+            availableHints = new List<int> { 1, 2, 3, 4 };
         }
     }
 }
