@@ -60,7 +60,10 @@
                 <MenuItem x:Name="MnuHighscore" Header="Highscores" Click="MenuHighscore_Click"/>
                 <MenuItem x:Name="MnuAfsluiten" Header="Afsluiten" Click="closeMenu_Click" />
             </MenuItem>
-
+            <MenuItem Header="Hint">
+                <MenuItem x:Name="MnuHintKleur" Header="Juiste Kleur (15 strafpunten)" Click="HintColor_Click"/>
+                <MenuItem x:Name="MnuHintPositie" Header="Juiste Kleur op Juiste Plaats (25 strafpunten)" Click="HintPosition_Click"/>
+            </MenuItem>
             <MenuItem x:Name="MnuInstellingen" Header="Instellingen" >
                 <MenuItem x:Name="MnuAmountOfTries" Header="Aantal pogingen"/>
             </MenuItem>

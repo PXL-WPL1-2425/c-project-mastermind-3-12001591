@@ -24,8 +24,10 @@ namespace PE3
         private int maxAttempts;
         private int currentPlayerIndex = 0;
         private int currentIndex;
+        private List<int> availableHints = new List<int> { 1, 2, 3, 4 };
+        private Random rnd = new Random();
 
-           
+
         public class GuessHistoryItem
         {
             public List<Brush> Colors { get; }
@@ -179,8 +181,8 @@ namespace PE3
                 StopCountdown();
                 MessageBox.Show("Time's up! You lost your turn.");
                 attempts++;
-                if (attempts >= maxAttempts)
                 Title = UpdateTitle();
+                if (attempts >= maxAttempts)
                 {
                     MessageBox.Show("Game over! You've reached the maximum number of attempts.");
                     gameEnded = true;
@@ -382,9 +384,8 @@ namespace PE3
                 string nextPlayer = GetNextPlayerName();
                 MessageBox.Show($"Code is gekraakt in {attempts} pogingen. Nu is speler {nextPlayer} aan de beurt.  ");
                 UpdateHighscores(playerName, currentScore);
-
-                gameEnded = true;
                 timer.Stop();
+                SwitchToNextPlayer(playerNames);
             }
 
             else if (attempts >= maxAttempts)
@@ -533,6 +534,59 @@ namespace PE3
         {
             string newTitle = $"{playerName} Poging {attempts + 1}/ {maxAttempts}";
             return newTitle;
+        }
+
+        private void HintColor_Click(object sender, RoutedEventArgs e)
+        {
+            currentScore -= 15; 
+            HintForCorrectColor();
+            scoreLabel.Content = $"Score: {currentScore}";
+        }
+
+        private void HintPosition_Click(object sender, RoutedEventArgs e)
+        {
+            currentScore -= 25;
+            HintForCorrectPosition();
+            scoreLabel.Content = $"Score: {currentScore}";
+        }
+
+        private void HintForCorrectColor()
+        {
+            List<string> correctColors = new List<string> { color1, color2, color3, color4 };
+            string selectedColor = correctColors[rnd.Next(correctColors.Count)];
+
+            MessageBox.Show($"De hint is: Er zit de kleur {selectedColor} in de code.", "Kleur Hint", MessageBoxButton.OK, MessageBoxImage.Information);
+        }
+
+        private void HintForCorrectPosition()
+        {
+            if (availableHints.Count == 0)
+            {
+                MessageBox.Show("Alle hints zijn al gegeven.", "Geen Hints Beschikbaar", MessageBoxButton.OK, MessageBoxImage.Information);
+                return;
+            }
+
+            int positionIndex = rnd.Next(availableHints.Count);
+            int position = availableHints[positionIndex];
+            availableHints.RemoveAt(positionIndex);
+
+            string correctColorAtPosition = "";
+            switch (position)
+            {
+                case 1:
+                    correctColorAtPosition = color1;
+                    break;
+                case 2:
+                    correctColorAtPosition = color2;
+                    break;
+                case 3:
+                    correctColorAtPosition = color3;
+                    break;
+                case 4:
+                    correctColorAtPosition = color4;
+                    break;
+            }
+            MessageBox.Show($"De hint is: De kleur op positie {position} is {correctColorAtPosition}.", "Positie Hint", MessageBoxButton.OK, MessageBoxImage.Information);
         }
     }
 }
