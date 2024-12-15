@@ -46,7 +46,7 @@ namespace PE3
             
             playerName = playerNames[currentPlayerIndex];
             attempts = 0;
-            Title = $"Poging {attempts + 1}/{maxAttempts}";
+            Title = UpdateTitle();
 
             GenerateNewCode();
 
@@ -99,7 +99,6 @@ namespace PE3
             playerName = playerNames[currentPlayerIndex];
             return (playerNames, maxAttempts);
         }
-
 
         private void closeMenu_Click(object sender, RoutedEventArgs e)
         {
@@ -181,7 +180,7 @@ namespace PE3
                 MessageBox.Show("Time's up! You lost your turn.");
                 attempts++;
                 if (attempts >= maxAttempts)
-                Title = $"Poging {attempts + 1}/{maxAttempts}";
+                Title = UpdateTitle();
                 {
                     MessageBox.Show("Game over! You've reached the maximum number of attempts.");
                     gameEnded = true;
@@ -356,7 +355,6 @@ namespace PE3
             timer.Stop();
             if (gameEnded) return;
 
-
             StartCountdown();
 
             string comboBox1Color = GetComboBoxColor(comboBox1);
@@ -377,7 +375,7 @@ namespace PE3
             CompareCodeWithLabels(comboBox1Color, comboBox2Color, comboBox3Color, comboBox4Color);
 
             attempts++;
-            Title = $"Poging {attempts + 1}/{maxAttempts}";
+            Title = UpdateTitle();
 
             if (comboBox1Color == color1 && comboBox2Color == color2 && comboBox3Color == color3 && comboBox4Color == color4)
             {
@@ -413,7 +411,7 @@ namespace PE3
             gameEnded = false;
             GenerateNewCode();
             scoreLabel.Content = $"Score: {currentScore}";
-            Title = $"Poging {attempts + 1}/ {maxAttempts}";
+            Title = UpdateTitle();
             timer.Start();
             StartCountdown();
             guessHistory.Clear();
@@ -530,6 +528,11 @@ namespace PE3
             {
                 return "No next player (end of list).";
             }
+        }
+        public string UpdateTitle()
+        {
+            string newTitle = $"{playerName} Poging {attempts + 1}/ {maxAttempts}";
+            return newTitle;
         }
     }
 }
