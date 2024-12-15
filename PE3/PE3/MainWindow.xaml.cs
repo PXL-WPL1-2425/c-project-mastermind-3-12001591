@@ -20,8 +20,12 @@ namespace PE3
         private List<GuessHistoryItem> guessHistory = new List<GuessHistoryItem>();
         private string[] highscores = new string[0];
         private string playerName;
+        private List<string> playerNames = new List<string>();
         private int maxAttempts;
+        private int currentPlayerIndex = 0;
+        private int currentIndex;
 
+           
         public class GuessHistoryItem
         {
             public List<Brush> Colors { get; }
@@ -39,6 +43,8 @@ namespace PE3
             InitializeComponent();
             var (playerNames, maxAttempts)= StartGame();
             this.maxAttempts = maxAttempts;
+            
+            playerName = playerNames[currentPlayerIndex];
             attempts = 0;
             Title = $"Poging {attempts + 1}/{maxAttempts}";
 
@@ -56,7 +62,7 @@ namespace PE3
         }
         private (List<string>, int) StartGame()
         {
-            List<string> playerNames = new List<string>();
+           
             bool addingPlayers = true;
 
             while (addingPlayers)
@@ -64,9 +70,9 @@ namespace PE3
                 string playerName = Microsoft.VisualBasic.Interaction.InputBox("Voer je naam in:", "Naam Invoeren", "Speler");
                 if (!string.IsNullOrEmpty(playerName))
                 {
-                    playerNames.Add(playerName); 
+                    playerNames.Add(playerName);
                 }
-                
+
                 string response = Microsoft.VisualBasic.Interaction.InputBox("Wil je nog een speler toevoegen? (Ja/Nee)", "Voeg Speler Toe", "Ja");
                 if (response.ToLower() == "nee")
                 {
@@ -74,6 +80,7 @@ namespace PE3
                 }
             }
 
+            
             int maxAttempts = 0;
             while (maxAttempts < 3 || maxAttempts > 20)
             {
@@ -87,8 +94,12 @@ namespace PE3
                     MessageBox.Show("Voer een geldig getal tussen 3 en 20 in.", "Foutmelding", MessageBoxButton.OK, MessageBoxImage.Error);
                 }
             }
+
+            currentPlayerIndex = 0;
+            playerName = playerNames[currentPlayerIndex];
             return (playerNames, maxAttempts);
         }
+
 
         private void closeMenu_Click(object sender, RoutedEventArgs e)
         {
@@ -342,9 +353,10 @@ namespace PE3
         }
         private void ValidateButton_Click(object sender, RoutedEventArgs e)
         {
+            timer.Stop();
             if (gameEnded) return;
 
-            timer.Stop();
+
             StartCountdown();
 
             string comboBox1Color = GetComboBoxColor(comboBox1);
@@ -360,7 +372,6 @@ namespace PE3
 
             int mistakes = CalculateScore(comboBox1Color, comboBox2Color, comboBox3Color, comboBox4Color);
             currentScore -= mistakes;
-
             scoreLabel.Content = $"Score: {currentScore}";
 
             CompareCodeWithLabels(comboBox1Color, comboBox2Color, comboBox3Color, comboBox4Color);
@@ -370,19 +381,28 @@ namespace PE3
 
             if (comboBox1Color == color1 && comboBox2Color == color2 && comboBox3Color == color3 && comboBox4Color == color4)
             {
-                MessageBox.Show("Congratulations! You guessed the code correctly!");
+                string nextPlayer = GetNextPlayerName();
+                MessageBox.Show($"Code is gekraakt in {attempts} pogingen. Nu is speler {nextPlayer} aan de beurt.  ");
                 UpdateHighscores(playerName, currentScore);
 
                 gameEnded = true;
                 timer.Stop();
             }
+
             else if (attempts >= maxAttempts)
             {
-                MessageBox.Show("Game over! You've reached the maximum number of attempts.");
+                string nextPlayer = GetNextPlayerName();
+                string correctCode = $"{color1}, {color2}, {color3}, {color4}";
+               
+                string message = $"You failed! The correct code was: {correctCode}\n\nNu is speler {nextPlayer} aan de beurt.";
+                MessageBox.Show(message, $"{playerName}'s Turn", MessageBoxButton.OK, MessageBoxImage.Information);
+
                 UpdateHighscores(playerName, currentScore);
 
                 gameEnded = true;
                 timer.Stop();
+
+                SwitchToNextPlayer(playerNames);
             }
         }
 
@@ -484,6 +504,32 @@ namespace PE3
         private void MenuHighscore_Click(object sender, RoutedEventArgs e)
         {
             ShowHighscores();
+        }
+        private void SwitchToNextPlayer(List<string> playerNames)
+        {
+           
+            if (playerNames == null || playerNames.Count == 0)
+            {
+                MessageBox.Show("There are no players in the game.", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
+                return;
+            }
+
+            currentPlayerIndex = (currentPlayerIndex + 1) % playerNames.Count;
+
+            playerName = playerNames[currentPlayerIndex];
+            ResetGame();
+        }
+
+        public string GetNextPlayerName()
+        {
+            if (currentPlayerIndex + 1 < playerNames.Count)
+            {
+                return playerNames[currentPlayerIndex + 1];
+            }
+            else
+            {
+                return "No next player (end of list).";
+            }
         }
     }
 }
