@@ -288,19 +288,12 @@ namespace PE3
             Brush chosenColorActual = GetBrushFromString(chosenColor);
             Brush correctColorActual = GetBrushFromString(correctColor);
 
-            if (((SolidColorBrush)chosenColorActual).Color == Colors.Gray)
-            {
-                label.Background = chosenColorActual;
-                label.BorderBrush = new SolidColorBrush(Colors.Transparent);
-                label.BorderThickness = new Thickness(0);
-                return (chosenColorActual, new SolidColorBrush(Colors.Transparent));
-            }
-
             if (((SolidColorBrush)chosenColorActual).Color == ((SolidColorBrush)correctColorActual).Color)
             {
                 label.Background = chosenColorActual;
                 label.BorderThickness = new Thickness(5);
                 label.BorderBrush = new SolidColorBrush(Colors.Red);
+                label.ToolTip = "Juiste kleur, juiste positie";
                 return (chosenColorActual, new SolidColorBrush(Colors.Red));
             }
             else if (IsPartialMatch(((SolidColorBrush)chosenColorActual).Color, position))
@@ -308,6 +301,7 @@ namespace PE3
                 label.Background = chosenColorActual;
                 label.BorderBrush = new SolidColorBrush(Colors.Wheat);
                 label.BorderThickness = new Thickness(3);
+                label.ToolTip = "Juiste kleur, foute positie";
                 return (chosenColorActual, new SolidColorBrush(Colors.Wheat));
             }
             else
@@ -315,6 +309,7 @@ namespace PE3
                 label.Background = chosenColorActual;
                 label.BorderBrush = new SolidColorBrush(Colors.Transparent);
                 label.BorderThickness = new Thickness(0);
+                label.ToolTip = "Foute kleur";
                 return (chosenColorActual, new SolidColorBrush(Colors.Transparent));
             }
         }
